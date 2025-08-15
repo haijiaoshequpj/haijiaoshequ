@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name              海角社区
-// @version           1.2.4
-// @description       🔥不限次看付费视频，下载视频，复制播放链接，保存账号密码免输入，帖子是否有视频图片提示(标题前缀)，自动展开帖子，屏蔽广告等
+// @version           1.2.5
+// @description       🔥不限次看付费视频，查看封禁内容、下载视频，复制播放链接，保存账号密码免输入，帖子是否有视频图片提示(标题前缀)，自动展开帖子，屏蔽广告等
 // @icon              https://cdn.xysdjb.com/image/boy.jpeg
 // @namespace         海角社区
 // @author            lucky
@@ -205,26 +205,26 @@ const serializeVideo = async (str) => {
 			}
 		} catch (e) {}
 		
-		if(superVip._CONFIG_.videoUrl.key && (superVip._CONFIG_.videoUrl.key != item.ke)){
-			const keyReg = /\/(enc_.+)/.exec(item.ke)
-			if(keyReg && keyReg.length > 1){
-				item.ke= superVip._CONFIG_.videoUrl.key + keyReg[1]
-				$.ajax({
-					method: 'GET',
-					url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/updateKey?id=' + ec.knxkbxen(item._id) + '&key=' + ec.knxkbxen(item.ke),
-					timeout: 8000,
-					headers: {
-						'luckyToken': superVip._CONFIG_.user.token
-					},
-					success: (response) =>{
-						if(response.newToken){
-							superVip._CONFIG_.user.token = response.newToken;
-							GM_setValue('jsxl_user', superVip._CONFIG_.user)
-						}
-					}
-				})
-			}
-		}
+		// if(superVip._CONFIG_.videoUrl.key && (superVip._CONFIG_.videoUrl.key != item.ke)){
+		// 	const keyReg = /\/(enc_.+)/.exec(item.ke)
+		// 	if(keyReg && keyReg.length > 1){
+		// 		item.ke= superVip._CONFIG_.videoUrl.key + keyReg[1]
+		// 		$.ajax({
+		// 			method: 'GET',
+		// 			url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/updateKey?id=' + ec.knxkbxen(item._id) + '&key=' + ec.knxkbxen(item.ke),
+		// 			timeout: 8000,
+		// 			headers: {
+		// 				'luckyToken': superVip._CONFIG_.user.token
+		// 			},
+		// 			success: (response) =>{
+		// 				if(response.newToken){
+		// 					superVip._CONFIG_.user.token = response.newToken;
+		// 					GM_setValue('jsxl_user', superVip._CONFIG_.user)
+		// 				}
+		// 			}
+		// 		})
+		// 	}
+		// }
 		let m3u8Content = '#EXTM3U' + '\r\n';
 		m3u8Content += '#EXT-X-VERSION:3' + '\r\n';
 		m3u8Content += '#EXT-X-TARGETDURATION:11' + '\r\n';
@@ -1574,7 +1574,7 @@ const superVip = (function() {
 		isMobile: navigator.userAgent.match(
 			/(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini)/i),
 		vipBoxId: 'wt-vip-jx-box' + Math.ceil(Math.random() * 100000000),
-		version: '1.2.4',
+		version: '1.2.5',
 		videoUrl: {},
 		downUtils: [
 			{ title: '在线下载1(适合电脑)', url: 'https://tools.thatwind.com/tool/m3u8downloader#m3u8=', isAppend: true},
