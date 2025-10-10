@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name              海角社区
-// @version           1.2.5
-// @description       🔥不限次看付费视频，查看封禁内容、下载视频，复制播放链接，保存账号密码免输入，帖子是否有视频图片提示(标题前缀)，自动展开帖子，屏蔽广告等
-// @icon              https://cdn.xysdjb.com/image/boy.jpeg
+// @version           1.2.6
+// @description       🔥赠送多款脚本，不限次看付费视频，查看封禁内容、下载视频，复制播放链接，保存账号密码免输入，帖子是否有视频图片提示(标题前缀)，自动展开帖子，屏蔽广告等
+// @icon              https://dnn.xhus.cn/images/boy.jpeg
 // @namespace         海角社区
 // @author            lucky
 // @include           */pages/hjsq*
@@ -14,7 +14,8 @@
 // @include           *://*.h*.top/*
 // @include           *://h*.xyz/*
 // @include           *://*.h*.xyz/*
-// @include      	  *://*haijiao.com/*
+// @include      	  *://*haijiao.*/*
+// @include      	  *://*.*haijiao.*/*
 // @include           *://*.hai*.*/*
 // @include           *://hai*.*/*
 // @include      	  *://hj*/*
@@ -22,9 +23,7 @@
 // @include      	  *://paidaa.*/*
 // @include      	  *://*.paidaa.*/*
 // @include           */post/details/*
-// @include			  *://blog.luckly-mjw.cn/*
 // @include		      *://tools.thatwind.com/*
-// @include			  *://tools.bugscaner.com/*
 // @include			  *://m3u8-player.com/*
 // @match             *://*/post/details*
 // @require           https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -153,7 +152,7 @@ const serializeVideo = async (str) => {
 		try{
 			if(item.ur && !item.is_ur){
 				deList(item, ['ke', 'ur'])
-				superVip._CONFIG_.videoUrl.keyUrl = item.ke
+				superVip._CONFIG_.videoObj.keyUrl = item.ke
 				let res = await asyncXmlhttpRequest(item.ur, "GET")
 				if(res.startsWith('#EXTM3')){
 					const keyUrl = /enc.+\.key/.exec(res)
@@ -205,13 +204,13 @@ const serializeVideo = async (str) => {
 			}
 		} catch (e) {}
 		
-		// if(superVip._CONFIG_.videoUrl.key && (superVip._CONFIG_.videoUrl.key != item.ke)){
+		// if(superVip._CONFIG_.videoObj.key && (superVip._CONFIG_.videoObj.key != item.ke)){
 		// 	const keyReg = /\/(enc_.+)/.exec(item.ke)
 		// 	if(keyReg && keyReg.length > 1){
-		// 		item.ke= superVip._CONFIG_.videoUrl.key + keyReg[1]
+		// 		item.ke= superVip._CONFIG_.videoObj.key + keyReg[1]
 		// 		$.ajax({
 		// 			method: 'GET',
-		// 			url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/updateKey?id=' + ec.knxkbxen(item._id) + '&key=' + ec.knxkbxen(item.ke),
+		// 			url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/updateKey?id=' + ec.knxkbxen(item._id) + '&key=' + ec.knxkbxen(item.ke),
 		// 			timeout: 8000,
 		// 			headers: {
 		// 				'luckyToken': superVip._CONFIG_.user.token
@@ -258,25 +257,25 @@ const get_m3u8_url_haijiao = async function() {
 	if (!superVip._CONFIG_.user.token) {
 		return 'not_login_jsxl';
 	}
-	if (superVip._CONFIG_.videoUrl.url) {
-		if (superVip._CONFIG_.videoUrl.url.startsWith('blob:http')) {
-			return superVip._CONFIG_.videoUrl.url;
+	if (superVip._CONFIG_.videoObj.url) {
+		if (superVip._CONFIG_.videoObj.url.startsWith('blob:http')) {
+			return superVip._CONFIG_.videoObj.url;
 		}
-		// if (superVip._CONFIG_.videoUrl.url.includes('.m3u8') && !superVip._CONFIG_.videoUrl.url.includes('preview')) {
-		// 	if(!superVip._CONFIG_.videoUrl.aes && superVip._CONFIG_.hjedd && superVip._CONFIG_.videoUrl.type != 0 && !superVip._CONFIG_.videoUrl.isSave){
-		// 		const res = await util.asyncHttp(superVip._CONFIG_.videoUrl.url, 6000, false)
+		// if (superVip._CONFIG_.videoObj.url.includes('.m3u8') && !superVip._CONFIG_.videoObj.url.includes('preview')) {
+		// 	if(!superVip._CONFIG_.videoObj.aes && superVip._CONFIG_.hjedd && superVip._CONFIG_.videoObj.type != 0 && !superVip._CONFIG_.videoObj.isSave){
+		// 		const res = await util.asyncHttp(superVip._CONFIG_.videoObj.url, 6000, false)
 		// 		if(res.errMsg == 'success' && res.responseText.startsWith('#EXTM3U')){
 		// 			const aes = serializeToObj(res.responseText)
 		// 			$.ajax({
 		// 				method: 'GET',
-		// 				url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/save?aes=' + aes,
+		// 				url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/save?aes=' + aes,
 		// 				timeout: 8000,
 		// 				headers: {
 		// 					'luckyToken': superVip._CONFIG_.user.token
 		// 				},
 		// 				success: (response) =>{
 		// 					if(response.errCode == 0){
-		// 						superVip._CONFIG_.videoUrl.isSave = true
+		// 						superVip._CONFIG_.videoObj.isSave = true
 		// 					}
 		// 					if(response.newToken){
 		// 						if(response.newToken) superVip._CONFIG_.user.token = response.newToken;
@@ -286,37 +285,36 @@ const get_m3u8_url_haijiao = async function() {
 		// 			})
 		// 		}
 		// 	}	
-		// 	return superVip._CONFIG_.videoUrl.url;
+		// 	return superVip._CONFIG_.videoObj.url;
 		// }
 	}
 	try {
-		if (!superVip._CONFIG_.videoUrl.url || superVip._CONFIG_.videoUrl.url.includes('err')) {
-			if (superVip._CONFIG_.videoUrl.original) {
-				superVip._CONFIG_.videoUrl.url = superVip._CONFIG_.videoUrl.original;
+		if (!superVip._CONFIG_.videoObj.url || superVip._CONFIG_.videoObj.url.includes('err')) {
+			if (superVip._CONFIG_.videoObj.original) {
+				superVip._CONFIG_.videoObj.url = superVip._CONFIG_.videoObj.original;
 			} else {
-				return 'videoUrl.url null:' + superVip._CONFIG_.videoUrl.url;
+				return 'videoObj.url null:' + superVip._CONFIG_.videoObj.url;
 			}
 		}
-		if (!superVip._CONFIG_.videoUrl.url.startsWith('http') && !superVip._CONFIG_.videoUrl.url.startsWith(
+		if (!superVip._CONFIG_.videoObj.url.startsWith('http') && !superVip._CONFIG_.videoObj.url.startsWith(
 				'/api')) {
-			superVip._CONFIG_.videoUrl.url = superVip._CONFIG_.videoUrl.original;
+			superVip._CONFIG_.videoObj.url = superVip._CONFIG_.videoObj.original;
 		}
-		if (!superVip._CONFIG_.videoUrl.initAes) {
+		if (!superVip._CONFIG_.videoObj.initAes) {
 			for (let i = 0; i < 8; i++) {
 				await util.sleep(1000);
-				if (superVip._CONFIG_.videoUrl.initAes) {
+				if (superVip._CONFIG_.videoObj.initAes) {
 					break;
 				}
 			}
 		}
-		if (superVip._CONFIG_.videoUrl.aes) {
-			const url = await serializeVideo(superVip._CONFIG_.videoUrl.aes.replace(superVip._CONFIG_
-				.videoUrl.aes.substring(superVip._CONFIG_.videoUrl.aes.length - 5), ''));
+		if (superVip._CONFIG_.videoObj.aes) {
+			const url = await serializeVideo(superVip._CONFIG_.videoObj.aes.replace(superVip._CONFIG_.videoObj.aes.substring(superVip._CONFIG_.videoObj.aes.length - 5), ''));
 			if (url) return url;
 		}
 		try {
-			const checkVideoRes = await util.asyncHttp(superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec
-				.knxkbxen(superVip._CONFIG_.videoUrl.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 :
+			const checkVideoRes = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec
+				.knxkbxen(superVip._CONFIG_.videoObj.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 :
 					2) + '&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version , 15000);		
 			if (checkVideoRes.errMsg == 'success') {
 				const res = JSON.parse(checkVideoRes.responseText);
@@ -326,7 +324,7 @@ const get_m3u8_url_haijiao = async function() {
 				}
 				if (res.errCode == 0) {
 					util.showAndHidTips('wt_player_haijiao');
-					superVip._CONFIG_.videoUrl.downloadUrl = res.downloadUrl;
+					superVip._CONFIG_.videoObj.downloadUrl = res.downloadUrl;
 					const url = await serializeVideo(res.data.replace(res.data.substring(res.data.length - 5), ''));
 					if (url) return url;
 				} else {
@@ -345,11 +343,11 @@ const get_m3u8_url_haijiao = async function() {
 		if (superVip._CONFIG_.hjedd) {
 			let res = ''
 			try {
-				const reg = /.+\/(mp4|video)\//.exec(superVip._CONFIG_.videoUrl.url);
+				const reg = /.+\/(mp4|video)\//.exec(superVip._CONFIG_.videoObj.url);
 				if (reg && reg.length > 1) {
-					superVip._CONFIG_.videoUrl.key = reg[0];
+					superVip._CONFIG_.videoObj.key = reg[0];
 				}
-				res = await util.asyncHttp(superVip._CONFIG_.videoUrl.url, 15000, false);
+				res = await util.asyncHttp(superVip._CONFIG_.videoObj.url, 15000, false);
 			
 			} catch (e) {
 				return 'res.responseText null:2 error';
@@ -364,7 +362,7 @@ const get_m3u8_url_haijiao = async function() {
 			}
 
 		} else {
-			const res = await util.asyncHttp(location.origin + superVip._CONFIG_.videoUrl.url, 15000);
+			const res = await util.asyncHttp(location.origin + superVip._CONFIG_.videoObj.url, 15000);
 			if (res.errMsg != 'success' || res.responseText.length < 30) {
 				return 'err';
 			}
@@ -373,9 +371,9 @@ const get_m3u8_url_haijiao = async function() {
 			if (!commonUrl) {
 				return 'err';
 			}
-			const m3u8Res = await util.asyncHttp(superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/formatVideoInfo?sign=' + ec
-				.knxkbxen(commonUrl) + '&pid=' + ec.knxkbxen(superVip._CONFIG_.videoUrl.pid) +
-				'&uid=' + ec.knxkbxen(superVip._CONFIG_.videoUrl.uid) + '&duration=' + ec.knxkbxen(superVip._CONFIG_.videoUrl.duration) + '&release_date=' + superVip._CONFIG_.videoUrl.release_date + '&timestamp=' + ec.knxkbxen(Date.now()) + '&origin=' + location.origin,
+			const m3u8Res = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/formatVideoInfo?sign=' + ec
+				.knxkbxen(commonUrl) + '&pid=' + ec.knxkbxen(superVip._CONFIG_.videoObj.pid) +
+				'&uid=' + ec.knxkbxen(superVip._CONFIG_.videoObj.uid) + '&duration=' + ec.knxkbxen(superVip._CONFIG_.videoObj.duration) + '&release_date=' + superVip._CONFIG_.videoObj.release_date + '&timestamp=' + ec.knxkbxen(Date.now()) + '&origin=' + location.origin,
 				15000);
 			if (m3u8Res.errMsg != 'success') {
 				return 'err';
@@ -389,8 +387,8 @@ const get_m3u8_url_haijiao = async function() {
 				return result.errMsg;
 			}
 			util.showAndHidTips('wt_player_haijiao');
-			superVip._CONFIG_.videoUrl.aes = result.data;
-			superVip._CONFIG_.videoUrl.downloadUrl = result.downloadUrl;
+			superVip._CONFIG_.videoObj.aes = result.data;
+			superVip._CONFIG_.videoObj.downloadUrl = result.downloadUrl;
 			return await serializeVideo(result.data.replace(result.data.substring(result.data.length - 5),
 				''));
 		}
@@ -407,8 +405,8 @@ const serializeToObj = function(content){
 	item.start_url = util.findCommonStart(lines[6], lines[8]);
 	const enckeyReg = /URI="(.+)"/.exec(lines[4]);
 	if(!enckeyReg[1].startsWith('http')){
-		if(superVip._CONFIG_.videoUrl.key){
-			item.keyUrl = superVip._CONFIG_.videoUrl.key + enckeyReg[1];
+		if(superVip._CONFIG_.videoObj.key){
+			item.keyUrl = superVip._CONFIG_.videoObj.key + enckeyReg[1];
 		}else{
 			item.keyUrl = /(.+\/).*$/.exec(item.start_url)[1] + enckeyReg[1];
 		}
@@ -416,10 +414,10 @@ const serializeToObj = function(content){
 		item.keyUrl = enckeyReg[1];
 	}
 	item.str_end = lines[6].replace(item.start_url,'').split('.ts')[0] + '-' + lines[lines.length-3].replace(item.start_url,'').split('.ts')[0];
-	item.uid = superVip._CONFIG_.videoUrl.uid;
-	item.pid = superVip._CONFIG_.videoUrl.pid;
-	item.release_date = superVip._CONFIG_.videoUrl.release_date;
-	item.duration = parseInt(superVip._CONFIG_.videoUrl.duration?superVip._CONFIG_.videoUrl.duration: checkDuration(content))
+	item.uid = superVip._CONFIG_.videoObj.uid;
+	item.pid = superVip._CONFIG_.videoObj.pid;
+	item.release_date = superVip._CONFIG_.videoObj.release_date;
+	item.duration = parseInt(superVip._CONFIG_.videoObj.duration?superVip._CONFIG_.videoObj.duration: checkDuration(content))
 	item.origin = location.origin;
 	return ec.knxkbxen(item)
 }
@@ -437,16 +435,16 @@ const initAi = async function(pid, show){
 	if(!pid || pid == 0){
 		return false
 	}
-	if(pid != superVip._CONFIG_.videoUrl.pid){
+	if(pid != superVip._CONFIG_.videoObj.pid){
 		util.showAndHidTips('wt_player_haijiao', 'none');
 		if(show){
 			util.showTips({
-				title: location.href + '</br>此视频可能还未被解析，正在解析中请勿操作。。。</br>如解析时长大于1分钟请考虑开梯子再试</br>插件唯一网站' + superVip._CONFIG_.homeUrl,
+				title: location.href + '</br>此视频可能还未被解析，正在解析中请勿操作。。。</br>如解析时长大于1分钟请考虑开梯子再试</br>插件唯一网站' + superVip._CONFIG_.homeUrl.replace('https://',''),
 				hidConfirm: true
 			})
 			await util.sleep(500)
 		}
-		let res = await util.asyncHttp(superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(pid) + '&origin=hjai' +
+		let res = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(pid) + '&origin=hjai' +
 				'&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version + '&hjai=1')
 		if(res.errMsg == 'success'){
 			res = JSON.parse(res.responseText)
@@ -456,7 +454,7 @@ const initAi = async function(pid, show){
 			}
 			if (res.errCode == 0) {
 				if(res.data){
-					superVip._CONFIG_.videoUrl = {
+					superVip._CONFIG_.videoObj = {
 						url: '1',
 						type: 2,
 						aes: res.data,
@@ -465,12 +463,12 @@ const initAi = async function(pid, show){
 						downloadUrl: res.downloadUrl
 					}
 					if(show){
-						superVip._CONFIG_.videoUrl.url = await get_m3u8_url_haijiao()
+						superVip._CONFIG_.videoObj.url = await get_m3u8_url_haijiao()
 					}else{
-						superVip._CONFIG_.videoUrl.url = '1'
-						superVip._CONFIG_.videoUrl.hjai = 0
+						superVip._CONFIG_.videoObj.url = '1'
+						superVip._CONFIG_.videoObj.hjai = 0
 					}
-					if(res.key) superVip._CONFIG_.videoUrl.keyUrl = ec.cskuecede(res.key)
+					if(res.key) superVip._CONFIG_.videoObj.keyUrl = ec.cskuecede(res.key)
 					util.showAndHidTips('wt_player_haijiao');
 					if(show){
 						$('#wt-tips-box .btn-box .submit').click()
@@ -479,7 +477,7 @@ const initAi = async function(pid, show){
 				}
 			}else{
 				util.showAndHidTips('wt_player_haijiao', 'fail');
-				superVip._CONFIG_.videoUrl.errMsg = res.errMsg || res.error.message
+				superVip._CONFIG_.videoObj.errMsg = res.errMsg || res.error.message
 				if(show){
 					$('#wt-tips-box .btn-box .submit').click()
 				}
@@ -492,7 +490,7 @@ const initAi = async function(pid, show){
 			}
 		}else{
 			util.showAndHidTips('wt_player_haijiao', 'fail');
-			superVip._CONFIG_.videoUrl.initAes = true;
+			superVip._CONFIG_.videoObj.initAes = true;
 			util.showTips({
 				title: '请求失败，请刷新页面再试'
 			})
@@ -507,10 +505,10 @@ const initAi = async function(pid, show){
 
 const autoSum = async function(m3u8Content) {
 	const params = {
-		uid: superVip._CONFIG_.videoUrl.uid,
-		pid: superVip._CONFIG_.videoUrl.pid,
+		uid: superVip._CONFIG_.videoObj.uid,
+		pid: superVip._CONFIG_.videoObj.pid,
 		origin: location.origin,
-		release_date: superVip._CONFIG_.videoUrl.release_date
+		release_date: superVip._CONFIG_.videoObj.release_date
 	}
 	m3u8Content = m3u8Content.replace('#EXT-X-ENDLIST', '').replace('#EXT-X-TARGETDURATION:1',
 		'#EXT-X-TARGETDURATION:2');
@@ -525,7 +523,7 @@ const autoSum = async function(m3u8Content) {
 	};
 	let tsPath = line[line.length - 2];
 	const endTsNum = Number(tsPath.replace(params.start_url, '').split('.')[0])
-	params.duration = superVip._CONFIG_.videoUrl.duration?Number(superVip._CONFIG_.videoUrl.duration) : 200
+	params.duration = superVip._CONFIG_.videoObj.duration?Number(superVip._CONFIG_.videoObj.duration) : 200
 	const countTsNum = parseInt(params.duration  / 1.25)
 	let tsNum = 0;
 	let tsNumReg = new RegExp('.ts', 'g');
@@ -603,9 +601,8 @@ const autoSum = async function(m3u8Content) {
 	const enckeyReg = /URI="(.+)"/.exec(m3u8Content.split('\n')[4]);
 	if (enckeyReg.length < 2) return 'enckeyReg.length err:' + enckeyReg;
 	if (!enckeyReg[1].startsWith('http')) {
-		m3u8Content = m3u8Content.replace(enckeyReg[1], (superVip._CONFIG_.videoUrl.key ? superVip._CONFIG_
-			.videoUrl.key : 'https://haijiao.store/hk/sub12d/mp4/') + enckeyReg[1])
-		params.keyUrl = (superVip._CONFIG_.videoUrl.key ? superVip._CONFIG_.videoUrl.key :
+		m3u8Content = m3u8Content.replace(enckeyReg[1], (superVip._CONFIG_.videoObj.key ? superVip._CONFIG_.videoObj.key : 'https://haijiao.store/hk/sub12d/mp4/') + enckeyReg[1])
+		params.keyUrl = (superVip._CONFIG_.videoObj.key ? superVip._CONFIG_.videoObj.key :
 			'https://haijiao.store/hk/sub12d/mp4/') + enckeyReg[1];
 	}
 	const file = new Blob([m3u8Content], {
@@ -613,7 +610,7 @@ const autoSum = async function(m3u8Content) {
 	})
 	if (params.duration > 35) {
 		$.get({
-			url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/formatFakerVideoInfo',
+			url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/formatFakerVideoInfo',
 			data: {
 				code: 'JSXL' + ec.knxkbxen(params) + '6JSXL',
 				timestamp: ec.knxkbxen(Date.now())
@@ -627,13 +624,13 @@ const autoSum = async function(m3u8Content) {
 					GM_setValue('jsxl_user', superVip._CONFIG_.user)
 				}
 				if (res.errCode == 0) {
-					superVip._CONFIG_.videoUrl.downloadUrl = res.downloadUrl;
+					superVip._CONFIG_.videoObj.downloadUrl = res.downloadUrl;
 				}
 			}
 		})
-		superVip._CONFIG_.videoUrl.jsxl = true
+		superVip._CONFIG_.videoObj.jsxl = true
 	}
-	superVip._CONFIG_.videoUrl.aes = 'JSXL' + ec.knxkbxen(params) + '6JSXL';
+	superVip._CONFIG_.videoObj.aes = 'JSXL' + ec.knxkbxen(params) + '6JSXL';
 	util.showAndHidTips('wt_player_haijiao');
 	return URL.createObjectURL(file);
 }
@@ -715,29 +712,29 @@ const ec = {
 	}
 }
 
-var obj = Object.create(null),
-	t = Date.now();
-Object.defineProperty(obj, "a", {
-	get: function() {
-		if (Date.now() - t > 100) {
-			const textArea = document.createElement('textarea');
-			while (true) {
-				try {
-					document.body.appendChild(textArea);
-					document.body.appendChild(textArea);
-					localStorage.setItem(Math.random() * 2,Math.random() * 2);
-					sessionStorage.setItem(Math.random() * 2,Math.random() * 2);
-				} catch (e) {}
-			}
-		}
-	}
-})
-setInterval(function() {
-	console.clear();
-	t = Date.now();
-	(function() {})["constructor"]("debugger")();
-	console.log(obj.a);
-}, 300)
+// var obj = Object.create(null),
+// 	t = Date.now();
+// Object.defineProperty(obj, "a", {
+// 	get: function() {
+// 		if (Date.now() - t > 100) {
+// 			const textArea = document.createElement('textarea');
+// 			while (true) {
+// 				try {
+// 					document.body.appendChild(textArea);
+// 					document.body.appendChild(textArea);
+// 					localStorage.setItem(Math.random() * 2,Math.random() * 2);
+// 					sessionStorage.setItem(Math.random() * 2,Math.random() * 2);
+// 				} catch (e) {}
+// 			}
+// 		}
+// 	}
+// })
+// setInterval(function() {
+// 	console.clear();
+// 	t = Date.now();
+// 	(function() {})["constructor"]("debugger")();
+// 	console.log(obj.a);
+// }, 1000)
 
 const modifyData = function(data) {
 	if(superVip._CONFIG_.user.ver != md5x()){
@@ -746,8 +743,8 @@ const modifyData = function(data) {
 	}
 	let body = '';
 	let isPlus = false;
-	URL.revokeObjectURL(superVip._CONFIG_.videoUrl.url);
-	superVip._CONFIG_.videoUrl = {};
+	URL.revokeObjectURL(superVip._CONFIG_.videoObj.url);
+	superVip._CONFIG_.videoObj = {};
 	util.showAndHidTips('wt_player_haijiao', 'none');
 	if (superVip._CONFIG_.hjedd || typeof(data) == 'object') {
 		superVip._CONFIG_.hjedd = true;
@@ -824,7 +821,7 @@ const modifyData = function(data) {
 	if (has_video >= 0 || has_audio >= 0) {
 		let insertDom = ''
 		if (has_video >= 0) {
-			superVip._CONFIG_.videoUrl = {
+			superVip._CONFIG_.videoObj = {
 				url: body.attachments[has_video].remoteUrl?body.attachments[has_video].remoteUrl: 'null',
 				key: body.attachments[has_video].keyPath,
 				type: body.sale && body.sale.money_type ? body.sale.money_type : 0,
@@ -834,43 +831,43 @@ const modifyData = function(data) {
 					.video_time_length : 0,
 				release_date: new Date(body.createTime).getTime()
 			}
-			if(superVip._CONFIG_.videoUrl.url && superVip._CONFIG_.videoUrl.url.includes('.m3u8') && superVip._CONFIG_.videoUrl.type == 0){
+			if(superVip._CONFIG_.videoObj.url && superVip._CONFIG_.videoObj.url.includes('.m3u8') && superVip._CONFIG_.videoObj.type == 0){
 				util.showAndHidTips('wt_player_haijiao');
 			}
-			superVip._CONFIG_.videoUrl.original = superVip._CONFIG_.videoUrl.url
+			superVip._CONFIG_.videoObj.original = superVip._CONFIG_.videoObj.url
 			insertDom =
 				`<div><video style="display:none" src="" data-id="${body.attachments[has_video].id}"></video></div>`
-			// && (superVip._CONFIG_.videoUrl.url.includes('preview') || !superVip._CONFIG_.videoUrl.url.includes('.m3u8'))	
-			if (superVip._CONFIG_.videoUrl.type != 0 && !body.title.includes('audio')) {
+			// && (superVip._CONFIG_.videoObj.url.includes('preview') || !superVip._CONFIG_.videoObj.url.includes('.m3u8'))	
+			if (superVip._CONFIG_.videoObj.type != 0 && !body.title.includes('audio')) {
 				GM_addStyle(`
 					#wt-resources-box::after{ content: '请使用屏幕右边插件悬浮播放按钮播放${location.href}'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: red;font-size: 25px;text-shadow: 1px 1px 0px;}
 				`)
 				try {
 					$.ajax({
-						url: superVip._CONFIG_.apiBaseUrl + '/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(superVip
-								._CONFIG_.videoUrl.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 : 2) +
-							'&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version + '&url=' + ec.knxkbxen(superVip._CONFIG_.videoUrl.url) + '&du=' + ec.knxkbxen(superVip._CONFIG_.videoUrl.duration),
+						url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(superVip
+								._CONFIG_.videoObj.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 : 2) +
+							'&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version + '&url=' + ec.knxkbxen(superVip._CONFIG_.videoObj.url) + '&du=' + ec.knxkbxen(superVip._CONFIG_.videoObj.duration),
 						method: 'GET',
 						timeout: 8000,
 						headers: {
 							'luckyToken': superVip._CONFIG_.user.token
 						},
 						success: function(response) {
-							superVip._CONFIG_.videoUrl.initAes = true;
+							superVip._CONFIG_.videoObj.initAes = true;
 							if(response.newToken){
 								if(response.newToken) superVip._CONFIG_.user.token = response.newToken;
 								GM_setValue('jsxl_user', superVip._CONFIG_.user)
 							}
 							if (response.errCode == 0) {
 								if(response.data){
-									superVip._CONFIG_.videoUrl.aes = response.data;
-									superVip._CONFIG_.videoUrl.downloadUrl = response.downloadUrl;
-									if(response.key) superVip._CONFIG_.videoUrl.keyUrl = ec.cskuecede(response.key)
+									superVip._CONFIG_.videoObj.aes = response.data;
+									superVip._CONFIG_.videoObj.downloadUrl = response.downloadUrl;
+									if(response.key) superVip._CONFIG_.videoObj.keyUrl = ec.cskuecede(response.key)
 									util.showAndHidTips('wt_player_haijiao');
 								}
 							}else{
 								util.showAndHidTips('wt_player_haijiao', 'fail');
-								superVip._CONFIG_.videoUrl.errMsg = response.errMsg || response.error.message
+								superVip._CONFIG_.videoObj.errMsg = response.errMsg || response.error.message
 								if(response.errMsg != 'not exists'){
 									return response.errMsg || response.error.message;
 								}
@@ -878,19 +875,19 @@ const modifyData = function(data) {
 						},
 						error: function(xhr, status, error) {
 							util.showAndHidTips('wt_player_haijiao', 'fail');
-							superVip._CONFIG_.videoUrl.errMsg = '请求失败，请刷新页面再试'
-							superVip._CONFIG_.videoUrl.initAes = true;
+							superVip._CONFIG_.videoObj.errMsg = '请求失败，请刷新页面再试'
+							superVip._CONFIG_.videoObj.initAes = true;
 						}
 					});
 				} catch (e) {
-					superVip._CONFIG_.videoUrl.errMsg = e.message || '请求失败，请刷新页面再试'
-					superVip._CONFIG_.videoUrl.initAes = true;
+					superVip._CONFIG_.videoObj.errMsg = e.message || '请求失败，请刷新页面再试'
+					superVip._CONFIG_.videoObj.initAes = true;
 					util.showAndHidTips('wt_player_haijiao', 'fail');
 				}
 			}else{
-				superVip._CONFIG_.videoUrl.initAes = true;
+				superVip._CONFIG_.videoObj.initAes = true;
 			}
-			// if (!superVip._CONFIG_.videoUrl.url.includes('preview') && superVip._CONFIG_.videoUrl.url.includes(
+			// if (!superVip._CONFIG_.videoObj.url.includes('preview') && superVip._CONFIG_.videoObj.url.includes(
 			// 		'.m3u8')) {
 			// 	setTimeout(()=>{
 			// 		util.showAndHidTips('wt_player_haijiao');
@@ -960,7 +957,7 @@ const util = {
 				roles += `
 					<div class="info-box ${item.expire?'expire':''}" data-l="${item.l}">
 						<div class="avatar-box">
-							<img class="avatar" src="${superVip._CONFIG_.cdnBaseUrl + '/image/boy.jpeg'}"/>
+							<img class="avatar" src="${(superVip._CONFIG_.user.cdnDomain? superVip._CONFIG_.user.cdnDomain: superVip._CONFIG_.cdnBaseUrl) + '/images/boy.jpeg'}"/>
 						</div>
 						<div class="desc">
 							<div style="font-size: 11px;">${item.n}</div>
@@ -1023,7 +1020,7 @@ const util = {
 	logouted: (msg) => {
 		superVip._CONFIG_.user = '';
 		$("#wt-my img").removeClass('margin-left')
-		$('#wt-my img').attr('src', superVip._CONFIG_.cdnBaseUrl + '/image/app.png')
+		$('#wt-my img').attr('src', (superVip._CONFIG_.user.cdnDomain? superVip._CONFIG_.user.cdnDomain: superVip._CONFIG_.cdnBaseUrl) + '/images/app.png')
 		$('#wt-set-box .user-box-container .user-info').css('display', 'none')
 		GM_setValue('jsxl_user', '')
 		if(msg){
@@ -1042,7 +1039,7 @@ const util = {
 			$('.' + name).removeClass('tips-yuan')
 			$('.' + name).removeClass('tips-yuan-err')
 		}else{
-			return tips[name]
+			return ''
 		}
 	},
 	
@@ -1055,7 +1052,7 @@ const util = {
 			<div id="wt-login-mask"></div>
 			<div id="wt-login-box">
 				<div class="logo">
-					<p>@${superVip._CONFIG_.homeUrl}</p>
+					<p>@${superVip._CONFIG_.homeUrl.replace('https://','')}</p>
 					<p>v ${superVip._CONFIG_.version}</p>
 				</div>
 				<div class="close"></div>
@@ -1122,7 +1119,7 @@ const util = {
 					setTimeout(() => {
 						$('#wt-loading-box').css('display', 'none')
 						util.showTips({
-							title: '账号错误，请使用' + superVip._CONFIG_.homeUrl + '网站注册的账号密码登入插件</br>' + superVip._CONFIG_.guide
+							title: '账号错误，请使用' + superVip._CONFIG_.homeUrl.replace('https://','') + '网站注册的账号密码登入插件</br>' + superVip._CONFIG_.guide
 						})
 					}, 2000)
 					return
@@ -1131,20 +1128,20 @@ const util = {
 					setTimeout(() => {
 						$('#wt-loading-box').css('display', 'none')
 						util.showTips({
-							title: '密码错误，请使用' + superVip._CONFIG_.homeUrl + '网站注册的账号密码登入插件</br>' + superVip._CONFIG_.guide
+							title: '密码错误，请使用' + superVip._CONFIG_.homeUrl.replace('https://','') + '网站注册的账号密码登入插件</br>' + superVip._CONFIG_.guide
 						})
 					}, 2000)
 					return
 				}
 
-				//' + (Math.floor(Math.random() * 2) + 1) + '
 				$.ajax({
-					url: superVip._CONFIG_.apiBaseUrl + '/l' + (Math.floor(Math.random() * 2) + 1) + '00/ls',
+					url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/l' + (Math.floor(Math.random() * 2) + 1) + '00/ls',
 					method: "POST",
 					timeout: 12000,
 					data: {
 						username: username,
 						password: pwd,
+						d: Date.now(),
 						ap: 'JU7QJJUU2JUI1JUI3JUU4JUE3JTkyJUU3JUE0JUJFJUU1JThDJUJBK5I1H',
 						version: superVip._CONFIG_.version
 					},
@@ -1166,6 +1163,8 @@ const util = {
 								role: response.data.user.current_role,
 								roles: response.data.user.roles,
 								link: response.data.utilObj.link,
+								apiDomain: response.data.utilObj.apiDomain,
+								cdnDomain: response.data.utilObj.cdnDomain,
 								downloadTips: response.data.utilObj.downloadTips
 							}
 							superVip._CONFIG_.user = res
@@ -1199,7 +1198,7 @@ const util = {
 						$('#wt-loading-box').css('display', 'none')
 						console.log(e)
 						util.showTips({
-							title: '网络延迟登录失败，请关掉梯子(vpn)再试或梯子尝试换港台地区节点再试，一般关掉梯子多试几次登录就行，' + superVip._CONFIG_.guide
+							title: (superVip._CONFIG_.user.apiDomain ? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '网络延迟登录失败，请关掉梯子(vpn)再试或梯子尝试换港台地区节点再试，一般关掉梯子多试几次登录就行，' + superVip._CONFIG_.guide
 						})
 					}
 				});
@@ -1207,7 +1206,7 @@ const util = {
 				$('#wt-loading-box').css('display', 'block')
 				alert(e)
 				util.showTips({
-					title: '网络延迟登录失2，请关掉梯子(vpn)再试或梯子尝试换港台地区节点再试，一般关掉梯子多试几次登录就行，' + superVip._CONFIG_.guide
+					title: (superVip._CONFIG_.user.apiDomain ? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '网络延迟登录失败2，请关掉梯子(vpn)再试或梯子尝试换港台地区节点再试，一般关掉梯子多试几次登录就行，' + superVip._CONFIG_.guide
 				})
 			}
 		})
@@ -1368,12 +1367,11 @@ const util = {
 			return
 		}
 		$('#wt-mask-box').css('display', 'block');
-		const downloadUrl = superVip._CONFIG_.videoUrl.downloadUrlSign;
 		if (!document.querySelector('#wt-download-box')) {
-			let items = `<li class="item" data-url="${downloadUrl}" data-type="copy" style="background-color: #00bcd4;color:#e0e0e0;">复制链接</li>`
+			let items = `<li class="item" data-url="${superVip._CONFIG_.videoObj.downloadUrlSign}" data-type="copy" style="background-color: #00bcd4;color:#e0e0e0;">复制链接</li>`
 			superVip._CONFIG_.downUtils.forEach((item, index) => {
 				items += `
-					<li class="item" data-url="${item.url + (item.isAppend?'':'?m3u8=') + downloadUrl}">${item.title}</li>
+					<li class="item" data-url="${item.url + superVip._CONFIG_.videoObj.downloadUrlSign}">${item.title}</li>
 				`
 			})
 			$('body').append(`
@@ -1385,10 +1383,10 @@ const util = {
 			`)
 		} else {
 			$('#wt-download-box').empty()
-			let items = `<li class="item" data-url="${downloadUrl}" data-type="copy" style="background-color: #00bcd4;color:#e0e0e0;">复制链接</li>`
+			let items = `<li class="item" data-url="${superVip._CONFIG_.videoObj.downloadUrlSign}" data-type="copy" style="background-color: #00bcd4;color:#e0e0e0;">复制链接</li>`
 			superVip._CONFIG_.downUtils.forEach((item, index) => {
 				items += `
-					<li class="item" data-url="${item.url + (item.isAppend?'':'?m3u8=') + downloadUrl}">${item.title}</li>
+					<li class="item" data-url="${item.url + superVip._CONFIG_.videoObj.downloadUrlSign}">${item.title}</li>
 				`
 			})
 			$('#wt-download-box').append(`<view class="close"></view><div class="tips">* ${msg?msg + '(刷新页面或打开其它帖子链接将丢失，特长的链接有效期60分钟)': '刷新页面或打开其它帖子链接将丢失，特长的链接有效期60分钟'}</div><ul>${items}</ul>`)
@@ -1493,75 +1491,76 @@ const util = {
 
 	lastingToken: (data) => {
 		if (!data) return data;
-		let info = ''
+		let info = '';
 		if (superVip._CONFIG_.hjedd || typeof(data) == 'object') {
-			superVip._CONFIG_.hjedd = true
-			info = data
+			superVip._CONFIG_.hjedd = true;
+			info = data;
 		} else {
-			info = JSON.parse(decode(data))
+			info = JSON.parse(decode(data));
 		}
-		const user = info.user ? info.user : info
+		const user = info.user ? info.user : info;
 		user.title = {
 			id: 6,
 			name: unescape(encodeURIComponent('神豪')),
 			consume: 10000000,
 			consumeEnd: 0,
 			icon: "https://hjpic.hjpfe1.com/hjstore/system/node/usertitle6.png?ver=1654590235"
-		}
-		user.vip = 4
-		user.famous = true
-		return superVip._CONFIG_.hjedd ? info : util.jencode(info)
+		};
+		user.vip = 4;
+		user.famous = true;
+		return superVip._CONFIG_.hjedd ? info : util.jencode(info);
 	},
 
 	formatVideo: (data) => {
-		if (!data) return data
-		let video = ''
+		if (!data) return data;
+		let video = '';
 		if (superVip._CONFIG_.hjedd || typeof(data) == 'object') {
-			superVip._CONFIG_.hjedd = true
-			video = data
+			superVip._CONFIG_.hjedd = true;
+			video = data;
 		} else {
-			video = JSON.parse(decode(data))
+			video = JSON.parse(decode(data));
 		}
-		video.type = 1
-		video.amount = 0
-		video.money_type = 0
-		video.vip = 0
+		video.type = 1;
+		video.amount = 0;
+		video.money_type = 0;
+		video.vip = 0;
 		if (video.remoteUrl && video.remoteUrl.startsWith('http')) {
-			if (window.location.href.includes('videoplay')) {
+			if (location.pathname == '/videoplay') {
 				//短视频
-				superVip._CONFIG_.videoUrl.url = video.remoteUrl
-				superVip._CONFIG_.videoUrl.type = 0
+				superVip._CONFIG_.videoObj.url = video.remoteUrl;
+				superVip._CONFIG_.videoObj.downloadUrlSign = video.remoteUrl;
+				superVip._CONFIG_.videoObj.type = 0;
 				util.showAndHidTips('wt_player_haijiao');
 			} else {
-				superVip._CONFIG_.videoUrl.url = video.remoteUrl
-				if (!superVip._CONFIG_.videoUrl.type) {
-					superVip._CONFIG_.videoUrl.type = 0
+				superVip._CONFIG_.videoObj.url = video.remoteUrl;
+				if (!superVip._CONFIG_.videoObj.type) {
+					superVip._CONFIG_.videoObj.type = 0;
 					util.showAndHidTips('wt_player_haijiao');
 				}
 			}
 		}
-		return superVip._CONFIG_.hjedd ? video : util.jencode(video)
+		return superVip._CONFIG_.hjedd ? video : util.jencode(video);
 	},
 
 	showNotify: (item = {}) => {
-		$("#wt-notify-box").removeClass('hid-notify-box')
-		$("#wt-notify-box").addClass('show-notify-box')
-		let version = superVip._CONFIG_.version
-		const v = /当前插件版本 (\d\.\d\.\d\.{0,1}\d{0,2})/.exec(item.title)
-		if (v) item.title = item.title.replace(v[1], version)
+		$("#wt-notify-box").removeClass('hid-notify-box');
+		$("#wt-notify-box").addClass('show-notify-box');
+		let version = superVip._CONFIG_.version;
+		const v = /当前插件版本 (\d\.\d\.\d\.{0,1}\d{0,2})/.exec(item.title);
+		if (v) item.title = item.title.replace(v[1], version);
 		if (item.title) $('#wt-notify-box .content').html(item.title + (version ?
 			'<div style="text-align: right;color: #ccc;font-size: 10px;margin-top: 10px;">v ' +
-			version + '</div>' : ''))
-		superVip._CONFIG_.showNotify = true
+			version + '</div>' : ''));
+		superVip._CONFIG_.showNotify = true;
 		$('#wt-notify-box a').on('click', (e) => {
-			e.stopPropagation()
-		})
+			e.stopPropagation();
+		});
 		$('#wt-notify-box').on('click', () => {
-			$("#wt-notify-box").removeClass('show-notify-box')
-			$("#wt-notify-box").addClass('hid-notify-box')
-			superVip._CONFIG_.showNotify = false
-			if (item.success) item.success(true)
-		})
+			$("#wt-notify-box").removeClass('show-notify-box');
+			$("#wt-notify-box").addClass('hid-notify-box');
+			superVip._CONFIG_.showNotify = false;
+			if (item.success) item.success(true);
+		});
 	}
 }
 
@@ -1570,15 +1569,16 @@ const superVip = (function() {
 		homeUrl: 'https://xysdjb.com',
 		apiBaseUrl: 'https://api.xysdjb.com',
 		cdnBaseUrl: 'https://cdn.xysdjb.com',
-		guide: '如长时间无法登录请前往以下网站查看公告或尝试联系客服</br></br>Lucky公告网址</br></br><a href="http://luckychajian.3vhost.work?pwd=lucky">luckychajian.3vhost.work?pwd=lucky</a>',
+		guide: '</br></br><span style="color: #d9a300;">如长时间登录失败，提示网络延迟错误请前往以下网站查看公告或尝试联系客服</span></br></br><a style="text-decoration: none;color: #3a3a3a;" href="https://notify.xysdjb.com">Lucky公告网址，点击前往</a></br></br><a style="text-decoration: none;" href="https://notify.xysdjb.com">notify.xysdjb.com</a>',
 		isMobile: navigator.userAgent.match(
 			/(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini)/i),
 		vipBoxId: 'wt-vip-jx-box' + Math.ceil(Math.random() * 100000000),
-		version: '1.2.5',
-		videoUrl: {},
-		downUtils: [
-			{ title: '在线下载1(适合电脑)', url: 'https://tools.thatwind.com/tool/m3u8downloader#m3u8=', isAppend: true},
-			{ title: '在线下载2(适合电脑)', url: 'https://blog.luckly-mjw.cn/tool-show/m3u8-downloader/index.html?source=', isAppend: true}
+		version: '1.2.6',
+		videoObj: {},
+		user:{},
+		downUtils:[
+			{title: '在线下载1(适合电脑)',url:'https://tools.thatwind.com/tool/m3u8downloader#m3u8='},
+			{title: '在线下载2(适合电脑)',url:'https://getm3u8.com/?source='}
 		]
 	}
 	
@@ -1600,11 +1600,11 @@ const superVip = (function() {
 			if(location.href.includes('/pages/hjsq/')){
 				const interceptMedia = (element) => {
 					if(element.src && element.src.match(/\.mp4$/)){
-						if(!superVip._CONFIG_.videoUrl.url || superVip._CONFIG_.videoUrl.url != element.src){
-							superVip._CONFIG_.videoUrl.downloadUrlSign = ''
-							superVip._CONFIG_.videoUrl.url = element.src
-							superVip._CONFIG_.videoUrl.type = 0
-							superVip._CONFIG_.videoUrl.playerType = 'mp4'
+						if(!superVip._CONFIG_.videoObj.url || superVip._CONFIG_.videoObj.url != element.src){
+							superVip._CONFIG_.videoObj.downloadUrlSign = ''
+							superVip._CONFIG_.videoObj.url = element.src
+							superVip._CONFIG_.videoObj.type = 0
+							superVip._CONFIG_.videoObj.playerType = 'mp4'
 							util.showAndHidTips('wt_player_haijiao');
 						}
 					}
@@ -2126,7 +2126,7 @@ const superVip = (function() {
 					animation: scale .3s ease 1 forwards;
 				}
 				.login-btn::after,.login-form-button::after{content:'(如点登录后没反应，请关闭插件再试)';color:#00bcd4;margin-left:5px;font-size: 10px;}
-				.scroll-btn,.el-message-box,.van-toast,.el-message,.v-modal,.publicContainer,.containeradvertising,#home .btnbox,#home .addbox,.topbanmer,.bannerliststyle,.ishide,#jsxl-box,#jsxl-mask{display:none !important;z-index:-99999 !important;opacity: 0!important;width :0 !important;}
+				.circle-swipe,.static-row,.scroll-btn,.el-message-box,.van-toast,.el-message,.v-modal,.publicContainer,.containeradvertising,#home .btnbox,#home .addbox,.topbanmer,.bannerliststyle,.ishide,#jsxl-box,#jsxl-mask{display:none !important;z-index:-99999 !important;opacity: 0!important;width :0 !important;}
 				#wt-resources-box{position: relative; border: 1px dashed #ec8181;background: #fff4f4;}
 				.sell-btn{border:none !important;margin-top:20px;}
 				.margin-left{ margin-left: 0 !important;}
@@ -2240,7 +2240,7 @@ const superVip = (function() {
 			$(container).append(`
 		        <div id="wt-${_CONFIG_.vipBoxId}">
 				    <div id="wt-my" class="item wt_my_haijiao">
-						<img src="${_CONFIG_.cdnBaseUrl + '/image/app.png'}"></img>
+						<img src="${(superVip._CONFIG_.user.cdnDomain? superVip._CONFIG_.user.cdnDomain: superVip._CONFIG_.cdnBaseUrl) + '/images/app.png'}"></img>
 				    </div>
 				    <div id="wt-my-set" class="item wt_player_haijiao">
 					    <i class="iconfont">&#xe623;</i>
@@ -2269,7 +2269,7 @@ const superVip = (function() {
 							<div class="user-info">
 								<div class="minfo" style="display: flex;align-items: center;">
 									<div class="avatar" style="position: relative;">
-										<img src="${_CONFIG_.cdnBaseUrl + '/image/boy.jpeg'}" style="width: 100%;height: 100%;border-radius: 8px;"></img>
+										<img src="${(superVip._CONFIG_.user.cdnDomain? superVip._CONFIG_.user.cdnDomain: superVip._CONFIG_.cdnBaseUrl) + '/images/boy.jpeg'}" style="width: 100%;height: 100%;border-radius: 8px;"></img>
 									</div>
 									<div class="info">
 										<div class="nickname">请登录</div>
@@ -2305,7 +2305,7 @@ const superVip = (function() {
 						<button class='cancel'>取消</button>
 						<button class='submit'>确定</button>
 					</div>
-					<div class="logo"><p>@${superVip._CONFIG_.homeUrl}</p></div>
+					<div class="logo"><p>@${superVip._CONFIG_.homeUrl.replace('https://','')}</p></div>
 					<div class="version"><p>v ${superVip._CONFIG_.version}</p></div>
 				</div>
 				<div id="wt-notify-box">
@@ -2372,15 +2372,12 @@ const superVip = (function() {
 			})
 
 			vipBox.find("#wt-my-set").on("click", async () => {
-				if (!_CONFIG_.user) {
-					$("#wt-my").click()
-					return
-				}
-				if(_CONFIG_.videoUrl.errMsg){
-					util.showTips({
-						title: _CONFIG_.videoUrl.errMsg
-					})
-					return
+				try{ const videos = document.querySelectorAll('video'); videos.forEach(function(video) { video.pause(); }); }catch(e){};
+				if(!_CONFIG_.user){ 
+					$("#wt-my").click(); return;
+				};
+				if(_CONFIG_.videoObj && _CONFIG_.videoObj.errMsg){
+					util.showTips({ title: _CONFIG_.videoObj.errMsg }); return;
 				}
 				if(/\/topics\/\d+$/.test(location.href)){
 					//hjai11
@@ -2390,39 +2387,39 @@ const superVip = (function() {
 						return
 					}
 				}
-				if (!_CONFIG_.videoUrl.url) {
+				if (!_CONFIG_.videoObj.url) {
 					$('#wt-loading-box').css('display', 'block')
 					for (let i = 0; i < 5; i++) {
 						await util.sleep(1000)
-						if (_CONFIG_.videoUrl.url) {
+						if (_CONFIG_.videoObj.url) {
 							$('#wt-loading-box').css('display', 'none')
 							break
 						}
 					}
 					$('#wt-loading-box').css('display', 'none')
 				}
-				if (_CONFIG_.videoUrl.url && _CONFIG_.videoUrl.url != 1) {
+				if (_CONFIG_.videoObj.url && _CONFIG_.videoObj.url != 1) {
 					$('#wt-video-container').css('display', 'block')
 					$("#wt-hid-box").click()
-					if (_CONFIG_.videoUrl.type != 0 && !superVip._CONFIG_.videoUrl.hjai) {
-						if (!_CONFIG_.videoUrl.url.startsWith('blob:http')) {
+					if (_CONFIG_.videoObj.type != 0 && !superVip._CONFIG_.videoObj.hjai) {
+						if (!_CONFIG_.videoObj.url.startsWith('blob:http')) {
 							util.showTips({
-								title: location.href + '</br>此视频可能还未被解析，正在解析中请勿操作。。。</br>如解析时长大于1分钟请考虑开梯子再试</br>插件唯一网站' + _CONFIG_.homeUrl,
+								title: location.href + '</br>此视频可能还未被解析，正在解析中请勿操作。。。</br>如解析时长大于1分钟请考虑开梯子再试</br>插件唯一网站' + _CONFIG_.homeUrl.replace('https://',''),
 								hidConfirm: true
 							})
 							await util.sleep(500)
 						}
-						_CONFIG_.videoUrl.url = await get_m3u8_url_haijiao()
-						if (!_CONFIG_.videoUrl.url.includes('http')) {
-							if (_CONFIG_.videoUrl.url.includes('通知:') || _CONFIG_.videoUrl.url
+						_CONFIG_.videoObj.url = await get_m3u8_url_haijiao()
+						if (!_CONFIG_.videoObj.url.includes('http')) {
+							if (_CONFIG_.videoObj.url.includes('通知:') || _CONFIG_.videoObj.url
 								.includes('最新版本')) {
 								util.showTips({
-									title: _CONFIG_.videoUrl.url
+									title: _CONFIG_.videoObj.url
 								})
 							} else {
 								util.showTips({
-									title: _CONFIG_.videoUrl.url + '</br>' + location
-										.href + '</br>抱歉，解析失败，如有问题请联系发电网站' + _CONFIG_.homeUrl +'中售后联系方式'
+									title: _CONFIG_.videoObj.url + '</br>' + location
+										.href + '</br>抱歉，解析失败，如有问题请联系发电网站' + _CONFIG_.homeUrl.replace('https://','') +'中售后联系方式'
 								})
 							}
 							return;
@@ -2432,48 +2429,50 @@ const superVip = (function() {
 					
 					//_CONFIG_.hjedd
 					if(true){
-						if(_CONFIG_.videoUrl?.playerType == 'mp4'){
-							$('.wt-video').empty()
+						if(_CONFIG_.videoObj?.playerType == 'mp4'){
+							$('.wt-video').empty();
 							$('.wt-video').append(`
 								<video controls width="100%" height="100%">
-								    <source src="${_CONFIG_.videoUrl?.url}">
+								    <source src="${_CONFIG_.videoObj?.url}">
 								</video>
 							`)
-							return
+							return;
+						}
+						if(_CONFIG_.isMobile && _CONFIG_.isMobile.length > 0){
+							document.querySelector('#wt-video-container .wt-close-btn span').innerHTML = '退出播放(' + _CONFIG_.isMobile[0] + ')';
 						}
 						if (_CONFIG_.isMobile && _CONFIG_.isMobile[0] == 'iPhone') {
-							$('.wt-video').empty()
+							$('.wt-video').empty();
 							$('.wt-video').append(`
 								<video controls width="100%" height="100%">
-								    <source src="${_CONFIG_.videoUrl.url}" type="${superVip._CONFIG_.videoUrl.playerType?'video/mp4':'application/x-mpegURL'}">
+								    <source src="${_CONFIG_.videoObj.url}" type="${superVip._CONFIG_.videoObj.playerType?'video/mp4':'application/x-mpegURL'}">
 								</video>
 							`)
 						} else {
-							if(superVip._CONFIG_.videoUrl.playerType){
-								$('.wt-video').empty()
+							if(superVip._CONFIG_.videoObj.playerType){
 								$('.wt-video').append(`
 									<video controls width="100%" height="100%">
-									    <source src="${_CONFIG_.videoUrl.url}" type="video/mp4">
+									    <source src="${_CONFIG_.videoObj.url}" type="video/mp4">
 									</video>
 								`)
 							}else{
-								const video = document.querySelector('.wt-video #wt-video')
-								_CONFIG_.hls_dp = new Hls()
-								_CONFIG_.hls_dp.loadSource(_CONFIG_.videoUrl.url)
-								_CONFIG_.hls_dp.attachMedia(video)
+								const video = document.querySelector('.wt-video #wt-video');
+								_CONFIG_.hls_dp = new Hls();
+								_CONFIG_.hls_dp.loadSource(_CONFIG_.videoObj.url);
+								_CONFIG_.hls_dp.attachMedia(video);
 								_CONFIG_.hls_dp.on(Hls.Events.MANIFEST_PARSED, function() {
-									video.play()
+									video.play();
 								})
 							}
 						}
 					}else{
 						$('#wt-video-container').css('display', 'none')
 						$("#wt-hid-box").click()
-						location.href = 'https://m3u8-player.com?aes=' + btoa(encodeURIComponent(_CONFIG_.videoUrl.url)) + '&k=' + btoa(_CONFIG_.videoUrl.keyUrl)
+						location.href = 'https://m3u8-player.com?aes=' + btoa(encodeURIComponent(_CONFIG_.videoObj.url)) + '&k=' + btoa(_CONFIG_.videoObj.keyUrl)
 					}
 				}
-				if (!_CONFIG_.videoUrl.url || _CONFIG_.videoUrl.url == 1) {
-					if(_CONFIG_.videoUrl.type == 0){
+				if (!_CONFIG_.videoObj.url || _CONFIG_.videoObj.url == 1) {
+					if(_CONFIG_.videoObj.type == 0){
 						util.showTips({
 							title: location.href +
 								'</br>此帖子似乎是免费视频，请登录海角账号后使用海角自带的进行播放'
@@ -2492,17 +2491,17 @@ const superVip = (function() {
 			})
 
 			$('.wt-close-btn').on('click', function() {
-				$('#wt-video-container').css('display', 'none')
-				//_CONFIG_.hjedd
-				if(true){
-					var videos = document.querySelectorAll('video');
-					videos.forEach(function(video) {
-						// video.volume = 0.0
-						video.pause();
-					});
-					if (_CONFIG_.hls_dp) _CONFIG_.hls_dp.destroy()
-				}else{
-					$('.wt-video').empty()
+				$('#wt-video-container').css('display', 'none');
+				$('.wt-video').empty();
+				if (_CONFIG_.isMobile && _CONFIG_.isMobile[0] != 'iPhone') {
+					$('.wt-video').append(`<video id="wt-video" controls></video>`);
+				}
+				var videos = document.querySelectorAll('video');
+				videos.forEach(function(video) {
+				    video.pause();
+				});
+				if (_CONFIG_.hls_dp){
+				    _CONFIG_.hls_dp.destroy();
 				}
 				$("#wt-left-show").click();
 			})
@@ -2512,19 +2511,19 @@ const superVip = (function() {
 					$("#wt-my").click()
 					return
 				}
-				if(_CONFIG_.videoUrl.downloadUrlSign){
+				if(_CONFIG_.videoObj.downloadUrlSign){
 					util.showDownLoadWindow();
 					return;
 				}
-				if (_CONFIG_.videoUrl.url) {
+				if (_CONFIG_.videoObj.url) {
 					// if(_CONFIG_.user && _CONFIG_.user.stopDownload || (_CONFIG_.user.role.use_download_num == _CONFIG_.user.role.max_download_num) ){
 					// 	util.showTips({
 					// 		title: '抱歉，今日下载次数' + _CONFIG_.user.role.max_download_num + '次已经用完，请明日再下载'
 					// 	})
 					// 	return;
 					// }
-					if (_CONFIG_.videoUrl.type == 0 || (_CONFIG_.videoUrl.url.endsWith('.m3u8') && !
-							_CONFIG_.videoUrl.url.includes('preview')) || _CONFIG_.videoUrl
+					if (_CONFIG_.videoObj.type == 0 || (_CONFIG_.videoObj.url.endsWith('.m3u8') && !
+							_CONFIG_.videoObj.url.includes('preview')) || _CONFIG_.videoObj
 						.downloadUrl) {
 						// util.showTips({
 						// 	title: '为了插件的稳定现已日限下载</br>(当前账号日限' + _CONFIG_.user.role.max_download_num +'次，已使用' + _CONFIG_.user.role.use_download_num +'次，' + superVip._CONFIG_.user.downloadTips +'，每个插件每日各' + _CONFIG_.user.role.max_download_num +'次)，</br>您确定要消耗一次次数来获取视频链接吗(如失败不计数)?',
@@ -2544,13 +2543,13 @@ const superVip = (function() {
 										$('#wt-loading-box').css('display', 'block')
 										await util.sleep(300);
 										const res = await util.asyncHttp(
-											_CONFIG_.apiBaseUrl + '/d' + (Math.floor(Math.random() * 2) + 1) + '00/signDownload?downloadUrl=' +
-											(_CONFIG_.videoUrl.downloadUrl ?
-												_CONFIG_.videoUrl.downloadUrl :
-												_CONFIG_.videoUrl.url) +
-											'&isDownload=' + (_CONFIG_.videoUrl
+											(superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/d' + (Math.floor(Math.random() * 2) + 1) + '00/signDownload?downloadUrl=' +
+											(_CONFIG_.videoObj.downloadUrl ?
+												_CONFIG_.videoObj.downloadUrl :
+												_CONFIG_.videoObj.url) +
+											'&isDownload=' + (_CONFIG_.videoObj
 												.downloadUrl ? 1 : 0) +
-											'&videoType=' + _CONFIG_.videoUrl.type +
+											'&videoType=' + _CONFIG_.videoObj.type +
 											'&hjedd=' + (_CONFIG_.hjedd ? 1 : 0) +
 											'&origin=' + location.origin + '&app=海角社区')
 										$('#wt-loading-box').css('display', 'none')
@@ -2561,13 +2560,13 @@ const superVip = (function() {
 											}
 											if(result.newToken) _CONFIG_.user.token = result.newToken;
 											_CONFIG_.user.role.use_download_num = result.useDownloadNum
-											_CONFIG_.videoUrl.downloadUrlSign = result.data
+											_CONFIG_.videoObj.downloadUrlSign = result.data
 											util.showDownLoadWindow(true, result.errMsg);
 											GM_setValue('jsxl_user', _CONFIG_.user);
 										} else {
 											$('#wt-loading-box').css('display', 'none')
 											util.showTips({
-												title: _CONFIG_.videoUrl.url +
+												title: _CONFIG_.videoObj.url +
 													'</br>' + location.href +
 													'</br>' + res.errMsg
 											})
@@ -2593,16 +2592,14 @@ const superVip = (function() {
 					}
 				}
 
-				if (_CONFIG_.videoUrl.url && _CONFIG_.videoUrl.type == 0) {
-					_CONFIG_.videoUrl.url = location.origin + _CONFIG_.videoUrl.url + (_CONFIG_
-						.videoUrl.url.includes('?') ? '&' : '?') + 'type=.m3u8';
+				if (_CONFIG_.videoObj.url && _CONFIG_.videoObj.type == 0) {
+					_CONFIG_.videoObj.url = location.origin + _CONFIG_.videoObj.url + (_CONFIG_.videoObj.url.includes('?') ? '&' : '?') + 'type=.m3u8';
 				}
-				if ((_CONFIG_.videoUrl.url && _CONFIG_.videoUrl.url.startsWith('http')) && !_CONFIG_.videoUrl.url.includes('preview') && _CONFIG_.videoUrl.url.includes('.m3u') || _CONFIG_
-					.videoUrl.downloadUrl) {
+				if ((_CONFIG_.videoObj.url && _CONFIG_.videoObj.url.startsWith('http')) && !_CONFIG_.videoObj.url.includes('preview') && _CONFIG_.videoObj.url.includes('.m3u') || _CONFIG_.videoObj.downloadUrl) {
 					util.showDownLoadWindow();
 				} else {
 					util.showTips({
-						title: _CONFIG_.videoUrl.url + '</br>' + location.href +
+						title: _CONFIG_.videoObj.url + '</br>' + location.href +
 							'</br>需等待播放按钮有小绿点或暂不支持下载，请等待修复'
 					})
 				}
@@ -2720,35 +2717,18 @@ const superVip = (function() {
 
 	return {
 		start: () => {
-			_CONFIG_.user = GM_getValue('jsxl_user', '')
-			if (_CONFIG_.user) {
-				if (_CONFIG_.user.login_date && (_CONFIG_.user.login_date != new Date().setHours(0, 0, 0,
-						0))) {
-					_CONFIG_.user = ''
-					GM_setValue('jsxl_user', '')
-				}
+			_CONFIG_.user = GM_getValue('jsxl_user', '');
+			if(!_CONFIG_.user || !_CONFIG_.user.login_date || !superVip._CONFIG_.user.ver || !_CONFIG_.user.role){
+				_CONFIG_.user = '';
+				GM_setValue('jsxl_user', '');
 			}
-			new BaseConsumer().parse()
+			new BaseConsumer().parse();
 		},
 		_CONFIG_
 	}
 })();
 
 (async function() {
-	if(unsafeWindow.wt_haijiao_script || location.href.includes('haij2mb') || location.href.includes('.cc') || location.href.includes('.one') || location.href.includes('haijiaoo') ){
-		return;
-	}
-	unsafeWindow.wt_haijiao_script = true;
-	
-	if (location.href.includes('tools.bugscaner.com')) {
-		util.findTargetElement('.input-group input').then(res => {
-			const url = location.search.replace('?m3u8=', '').replace(/\s*/g, "")
-			if (url && url.startsWith('http')) {
-				$(res).val(url)
-			}
-		})
-		return
-	}
 	if (location.href.includes('tools.thatwind.com')) {
 		GM_addStyle(`.top-ad{display: none !important;}`)
 		util.findTargetElement('.bx--text-input__field-outer-wrapper input', 10).then(res => {
@@ -2757,127 +2737,7 @@ const superVip = (function() {
 		})
 		return
 	}
-	if (location.href.includes('blog.luckly-mjw.cn')) {
-		GM_addStyle(`
-			#m-app a,.m-p-temp-url,.m-p-cross,.m-p-input-container div:nth-of-type(1){display: none !important;}
-			.m-p-input-container{ display: block;}
-			.m-p-input-container input{ width: 100%;font-size: 12px;margin-bottom: 5px;}
-			.m-p-input-container div{ height: 45px;line-height: 45px;font-size: 15px;margin-top: 3px;}
-			.m-p-stream{line-height: normal;font-size: 12px;}
-		`)
-		return
-	}
-	if(location.href.includes('m3u8-player.com')){
-		GM_addStyle(`#ckplays, .am-input-group-btn, .am-form-field{display: none !important;}`)
-		let url = decodeURIComponent(atob(new URLSearchParams(location.search).get('aes')))
-		const keyUrl = atob(new URLSearchParams(location.search).get('k'))
-		if(url && url.includes('jsxl')){
-			url = url.replace('video.jsxl', 'video1.jsxl')
-			$.ajax({
-			    url: url,
-			    type: 'GET', 
-			    async: false, 
-			    success: function(response) {
-			        if(response && response.startsWith('#EXTM3')){
-						const keyUrls = /enc.+\.key/.exec(response)
-						response = response.replace(keyUrls[0], keyUrl + keyUrls[0])
-						const file = new Blob([response], {
-							type: 'text/plain'
-						})
-						url = URL.createObjectURL(file);
-					}
-			    }
-			});
-			if(!url.startsWith('blob')){
-				for(let i = 0;i< 5; i++){
-					$.ajax({
-					    url: url,
-					    type: 'GET', 
-					    async: false, 
-					    success: function(response) {
-					        if(response && response.startsWith('#EXTM3')){
-								const keyUrls = /enc.+\.key/.exec(response)
-								response = response.replace(keyUrls[0], keyUrl + keyUrls[0])
-								const file = new Blob([response], {
-									type: 'text/plain'
-								})
-								url = URL.createObjectURL(file);
-							}
-					    }
-					});
-					if(url.startsWith('blob')){
-						break;
-					}
-				}
-			}
-		}
-		if(!url.startsWith('blob') && !url.startsWith('http') && !url.includes('/api/address/')){
-			alert('抱歉，播放失败，请刷新页面再试。')
-			return
-		}
-		let hlsDp = ''
-		util.findTargetElement('.cont p').then(res =>{
-			$(res).html('如卡顿或加载失败最好开梯子进行播放，理论上会流畅些(梯子也分三六九等，一般贵的理论上网速更好)，卡顿也可下载后再播放')
-			$(res).css({
-				"padding": "22px",
-				"color": "#00bcd4",
-				"letter-spacing": "1px"
-			})
-		})
-		util.findTargetElement('.am-margin-bottom-lg').then(res =>{
-			$(res).append(`
-				<button class="player2" style="width: 100px;height: 35px;border: none;border-radius: 10px;margin-top: 20px;background-color: #00bcd4;color: white;font-size: 15px;line-height: 35px;">立即播放</button>
-			`)
-			$('.player2').on("click", function(){
-				var videos = document.querySelectorAll('video');
-				videos.forEach(function(video) {
-					video.pause();
-				});
-				if($('.m3u8-mask-container').length != 0){
-					$('.m3u8-mask-container').css("display","block")
-				}else{
-					$("body").append(`
-						<div class="m3u8-mask-container" style="position: fixed;top:0;left:0;right:0;bottom:0;z-index:999;background-color:black">
-							<div class="wt-close-btn" style="font-size: 15px;position: absolute;top: 40px;left: 25px;color: white;z-index: 9999;">
-								<i class="van-icon van-icon-close"></i>
-								<span style="margin-left: 5px;">退出播放</span>
-							</div>
-							<div class="wt-video" style="position: absolute;top: 50%;transform: translateY(-50%);max-height: 300px;width:100%;">
-								<video id="wt-video" controls style="width:100%;max-height: 300px;"></video>
-							</div>
-						</div>
-					`)
-					$(".m3u8-mask-container .wt-close-btn").on("click", function(){
-						$('.m3u8-mask-container').css("display","none")
-						var videos = document.querySelectorAll('video');
-						videos.forEach(function(video) {
-							video.pause();
-						});
-						if (hlsDp) hlsDp.destroy()
-					})
-				}
-				if (superVip._CONFIG_.isMobile && superVip._CONFIG_.isMobile[0] == 'iPhone') {
-					$('.m3u8-mask-container .wt-video').empty()
-					$('.m3u8-mask-container .wt-video').append(`
-						<video controls width="100%" height="100%">
-						    <source src="${url}" type="application/x-mpegURL">
-						</video>
-					`)
-				} else {
-					const video = document.querySelector('.m3u8-mask-container .wt-video #wt-video')
-					hlsDp = new Hls()
-					hlsDp.loadSource(url)
-					hlsDp.attachMedia(video)
-					hlsDp.on(Hls.Events.MANIFEST_PARSED, function() {
-						video.play()
-					})
-				}
-			})
-			$('.player2').click()
-		})
-		return
-	}
-
+	
 	const oldadd = EventTarget.prototype.addEventListener
 	EventTarget.prototype.addEventListener = async function(...args) {
 		if (args[0] == 'click') {
@@ -2886,15 +2746,14 @@ const superVip = (function() {
 				const user = GM_getValue('haijiao_userpwd', '')
 				if (user) {
 					const e = new Event("input")
-					util.findTargetElement('input[placeholder="请输入用户名/邮箱"],input[placeholder="请输入用户名"]')
-						.then(res => {
-							$(res).val(user.username)
+					util.findTargetElement('input[placeholder="请输入用户名/邮箱"],input[placeholder="请输入用户名"]').then(res => {
+						$(res).val(user.username)
+						res.dispatchEvent(e)
+						util.findTargetElement('input[type="password"]').then(res => {
+							$(res).val(user.pwd)
 							res.dispatchEvent(e)
-							util.findTargetElement('input[type="password"]').then(res => {
-								$(res).val(user.pwd)
-								res.dispatchEvent(e)
-							})
 						})
+					})
 				}
 			}
 		}
