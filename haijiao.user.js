@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name              海角社区
-// @version           1.2.6
+// @version           1.2.7
 // @description       🔥赠送多款脚本，不限次看付费视频，查看封禁内容、下载视频，复制播放链接，保存账号密码免输入，帖子是否有视频图片提示(标题前缀)，自动展开帖子，屏蔽广告等
 // @icon              https://dnn.xhus.cn/images/boy.jpeg
 // @namespace         海角社区
@@ -313,9 +313,15 @@ const get_m3u8_url_haijiao = async function() {
 			if (url) return url;
 		}
 		try {
-			const checkVideoRes = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec
-				.knxkbxen(superVip._CONFIG_.videoObj.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 :
-					2) + '&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version , 15000);		
+			const checkVideoRes = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo', 15000, true, {
+				post: 1,
+				data: {
+					sign: ec.knxkbxen(superVip._CONFIG_.videoObj.pid),
+					origin: superVip._CONFIG_.hjedd ? 1 :2,
+					timestamp: ec.knxkbxen(Date.now()),
+					version: superVip._CONFIG_.version
+				}
+			});		
 			if (checkVideoRes.errMsg == 'success') {
 				const res = JSON.parse(checkVideoRes.responseText);
 				if(res.newToken){
@@ -444,8 +450,16 @@ const initAi = async function(pid, show){
 			})
 			await util.sleep(500)
 		}
-		let res = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(pid) + '&origin=hjai' +
-				'&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version + '&hjai=1')
+		let res = await util.asyncHttp((superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo', 6000, true, {
+			post: 1,
+			data: {
+				sign: ec.knxkbxen(pid),
+				origin: 'hjai',
+				timestamp: ec.knxkbxen(Date.now()),
+				version: superVip._CONFIG_.version,
+				hjai: 1
+			}
+		})
 		if(res.errMsg == 'success'){
 			res = JSON.parse(res.responseText)
 			if(res.newToken){
@@ -712,29 +726,29 @@ const ec = {
 	}
 }
 
-// var obj = Object.create(null),
-// 	t = Date.now();
-// Object.defineProperty(obj, "a", {
-// 	get: function() {
-// 		if (Date.now() - t > 100) {
-// 			const textArea = document.createElement('textarea');
-// 			while (true) {
-// 				try {
-// 					document.body.appendChild(textArea);
-// 					document.body.appendChild(textArea);
-// 					localStorage.setItem(Math.random() * 2,Math.random() * 2);
-// 					sessionStorage.setItem(Math.random() * 2,Math.random() * 2);
-// 				} catch (e) {}
-// 			}
-// 		}
-// 	}
-// })
-// setInterval(function() {
-// 	console.clear();
-// 	t = Date.now();
-// 	(function() {})["constructor"]("debugger")();
-// 	console.log(obj.a);
-// }, 1000)
+var obj = Object.create(null),
+	t = Date.now();
+Object.defineProperty(obj, "a", {
+	get: function() {
+		if (Date.now() - t > 100) {
+			const textArea = document.createElement('textarea');
+			while (true) {
+				try {
+					document.body.appendChild(textArea);
+					document.body.appendChild(textArea);
+					localStorage.setItem(Math.random() * 2,Math.random() * 2);
+					sessionStorage.setItem(Math.random() * 2,Math.random() * 2);
+				} catch (e) {}
+			}
+		}
+	}
+})
+setInterval(function() {
+	console.clear();
+	t = Date.now();
+	(function() {})["constructor"]("debugger")();
+	console.log(obj.a);
+}, 1500)
 
 const modifyData = function(data) {
 	if(superVip._CONFIG_.user.ver != md5x()){
@@ -842,16 +856,24 @@ const modifyData = function(data) {
 				GM_addStyle(`
 					#wt-resources-box::after{ content: '请使用屏幕右边插件悬浮播放按钮播放${location.href}'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: red;font-size: 25px;text-shadow: 1px 1px 0px;}
 				`)
+				//(superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo'
 				try {
 					$.ajax({
-						url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo?sign=' + ec.knxkbxen(superVip
-								._CONFIG_.videoObj.pid) + '&origin=' + (superVip._CONFIG_.hjedd ? 1 : 2) +
-							'&timestamp=' + ec.knxkbxen(Date.now()) + '&version=' + superVip._CONFIG_.version + '&url=' + ec.knxkbxen(superVip._CONFIG_.videoObj.url) + '&du=' + ec.knxkbxen(superVip._CONFIG_.videoObj.duration),
-						method: 'GET',
+						url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/h' + (Math.floor(Math.random() * 5) + 1) + '00/checkVideoInfo',
+						method: 'POST',
 						timeout: 8000,
 						headers: {
-							'luckyToken': superVip._CONFIG_.user.token
+							'luckyToken': superVip._CONFIG_.user.token,
+							'Content-Type': 'application/json'
 						},
+						data: JSON.stringify({
+							sign: ec.knxkbxen(superVip._CONFIG_.videoObj.pid),
+							origin: superVip._CONFIG_.hjedd ? 1 : 2,
+							timestamp: ec.knxkbxen(Date.now()),
+							version: superVip._CONFIG_.version,
+							url: ec.knxkbxen(superVip._CONFIG_.videoObj.url),
+							du: ec.knxkbxen(superVip._CONFIG_.videoObj.duration)
+						}),
 						success: function(response) {
 							superVip._CONFIG_.videoObj.initAes = true;
 							if(response.newToken){
@@ -1216,12 +1238,15 @@ const util = {
 		return encode(JSON.stringify(s, `utf-8`), plus);
 	},
 
-	asyncHttp: async (url, timeout = 6000, isHeader = true) => {
+	asyncHttp: async (url, timeout = 6000, isHeader = true, post = {}) => {
 		return new Promise((resolve, reject) => {
 			var request = new XMLHttpRequest();
-			request.open('GET', url, true);
+			request.open(post.post?'POST': 'GET', url, true);
 			if(isHeader){
 				request.setRequestHeader('luckyToken', superVip._CONFIG_.user.token);
+			}
+			if(post.data){
+				request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 			}
 			request.timeout = timeout;
 			request.onload = function() {
@@ -1251,7 +1276,7 @@ const util = {
 					responseText: ''
 				});
 			};
-			request.send();
+			request.send(post.data?JSON.stringify(post.data): '');
 		});
 	},
 
@@ -1573,7 +1598,7 @@ const superVip = (function() {
 		isMobile: navigator.userAgent.match(
 			/(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini)/i),
 		vipBoxId: 'wt-vip-jx-box' + Math.ceil(Math.random() * 100000000),
-		version: '1.2.6',
+		version: '1.2.7',
 		videoObj: {},
 		user:{},
 		downUtils:[
@@ -2427,48 +2452,39 @@ const superVip = (function() {
 						$('#wt-tips-box .btn-box .submit').click()
 					}
 					
-					//_CONFIG_.hjedd
-					if(true){
-						if(_CONFIG_.videoObj?.playerType == 'mp4'){
-							$('.wt-video').empty();
+					if(_CONFIG_.videoObj?.playerType == 'mp4'){
+						$('.wt-video').empty();
+						$('.wt-video').append(`
+							<video controls width="100%" height="100%">
+								<source src="${_CONFIG_.videoObj?.url}">
+							</video>
+						`)
+						return;
+					}
+					document.querySelector('#wt-video-container .wt-close-btn span').innerHTML = '退出播放(' + (_CONFIG_.isMobile? _CONFIG_.isMobile[0]: 'Windows') + ')';
+					if (_CONFIG_.isMobile && _CONFIG_.isMobile[0] == 'iPhone') {
+						$('.wt-video').empty();
+						$('.wt-video').append(`
+							<video controls width="100%" height="100%">
+								<source src="${_CONFIG_.videoObj.url}" type="${superVip._CONFIG_.videoObj.playerType?'video/mp4':'application/x-mpegURL'}">
+							</video>
+						`)
+					} else {
+						if(superVip._CONFIG_.videoObj.playerType){
 							$('.wt-video').append(`
 								<video controls width="100%" height="100%">
-								    <source src="${_CONFIG_.videoObj?.url}">
+									<source src="${_CONFIG_.videoObj.url}" type="video/mp4">
 								</video>
 							`)
-							return;
+						}else{
+							const video = document.querySelector('.wt-video #wt-video');
+							_CONFIG_.hls_dp = new Hls();
+							_CONFIG_.hls_dp.loadSource(_CONFIG_.videoObj.url);
+							_CONFIG_.hls_dp.attachMedia(video);
+							_CONFIG_.hls_dp.on(Hls.Events.MANIFEST_PARSED, function() {
+								video.play();
+							})
 						}
-						if(_CONFIG_.isMobile && _CONFIG_.isMobile.length > 0){
-							document.querySelector('#wt-video-container .wt-close-btn span').innerHTML = '退出播放(' + _CONFIG_.isMobile[0] + ')';
-						}
-						if (_CONFIG_.isMobile && _CONFIG_.isMobile[0] == 'iPhone') {
-							$('.wt-video').empty();
-							$('.wt-video').append(`
-								<video controls width="100%" height="100%">
-								    <source src="${_CONFIG_.videoObj.url}" type="${superVip._CONFIG_.videoObj.playerType?'video/mp4':'application/x-mpegURL'}">
-								</video>
-							`)
-						} else {
-							if(superVip._CONFIG_.videoObj.playerType){
-								$('.wt-video').append(`
-									<video controls width="100%" height="100%">
-									    <source src="${_CONFIG_.videoObj.url}" type="video/mp4">
-									</video>
-								`)
-							}else{
-								const video = document.querySelector('.wt-video #wt-video');
-								_CONFIG_.hls_dp = new Hls();
-								_CONFIG_.hls_dp.loadSource(_CONFIG_.videoObj.url);
-								_CONFIG_.hls_dp.attachMedia(video);
-								_CONFIG_.hls_dp.on(Hls.Events.MANIFEST_PARSED, function() {
-									video.play();
-								})
-							}
-						}
-					}else{
-						$('#wt-video-container').css('display', 'none')
-						$("#wt-hid-box").click()
-						location.href = 'https://m3u8-player.com?aes=' + btoa(encodeURIComponent(_CONFIG_.videoObj.url)) + '&k=' + btoa(_CONFIG_.videoObj.keyUrl)
 					}
 				}
 				if (!_CONFIG_.videoObj.url || _CONFIG_.videoObj.url == 1) {
@@ -2493,7 +2509,7 @@ const superVip = (function() {
 			$('.wt-close-btn').on('click', function() {
 				$('#wt-video-container').css('display', 'none');
 				$('.wt-video').empty();
-				if (_CONFIG_.isMobile && _CONFIG_.isMobile[0] != 'iPhone') {
+				if (!_CONFIG_.isMobile || _CONFIG_.isMobile[0] != 'iPhone') {
 					$('.wt-video').append(`<video id="wt-video" controls></video>`);
 				}
 				var videos = document.querySelectorAll('video');
@@ -2539,52 +2555,50 @@ const superVip = (function() {
 							doubt: true,
 							success: async (confirm) => {
 								if (confirm) {
-									try {
-										$('#wt-loading-box').css('display', 'block')
-										await util.sleep(300);
-										const res = await util.asyncHttp(
-											(superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/d' + (Math.floor(Math.random() * 2) + 1) + '00/signDownload?downloadUrl=' +
-											(_CONFIG_.videoObj.downloadUrl ?
-												_CONFIG_.videoObj.downloadUrl :
-												_CONFIG_.videoObj.url) +
-											'&isDownload=' + (_CONFIG_.videoObj
-												.downloadUrl ? 1 : 0) +
-											'&videoType=' + _CONFIG_.videoObj.type +
-											'&hjedd=' + (_CONFIG_.hjedd ? 1 : 0) +
-											'&origin=' + location.origin + '&app=海角社区')
-										$('#wt-loading-box').css('display', 'none')
-										if (res.errMsg == 'success') {
-											const result = JSON.parse(res.responseText)
+									$('#wt-loading-box').css('display', 'block');
+									await util.sleep(300);
+									$.post({
+										url: (superVip._CONFIG_.user.apiDomain? superVip._CONFIG_.user.apiDomain: superVip._CONFIG_.apiBaseUrl) + '/api/d' + (Math.floor(Math.random() * 2) + 1) + '00/signDownload',
+										headers:{
+											'luckyToken': _CONFIG_.user.token,
+											'Content-Type': 'application/json'
+										},
+										data: JSON.stringify({
+											downloadUrl: _CONFIG_.videoObj.downloadUrl ?_CONFIG_.videoObj.downloadUrl :_CONFIG_.videoObj.url,
+											isDownload: _CONFIG_.videoObj.downloadUrl ? 1 : 0,
+											videoType: _CONFIG_.videoObj.type,
+											hjedd: _CONFIG_.hjedd ? 1 : 0,
+											origin: location.origin,
+											app: '海角社区',
+											
+										}),
+										timeout: 8000,
+										success: function(result) {
+											$('#wt-loading-box').css('display', 'none');
 											if (result.errCode != 0) {
-												throw new Error(result.errMsg)
+												util.showTips({
+													title: result.errMsg + '</br>' + location.href + '</br>获取下载链接失败，请稍后再试'
+												});
+												if(result.errMsg.includes('明日再下载')){
+													_CONFIG_.user.stopDownload = true;
+													_CONFIG_.user.role.use_download_num = _CONFIG_.user.role.max_download_num;
+													GM_setValue('jsxl_user', _CONFIG_.user);
+												}
+											}else{
+												if(result.newToken) _CONFIG_.user.token = result.newToken;
+												_CONFIG_.user.role.use_download_num = result.useDownloadNum;
+												_CONFIG_.videoObj.downloadUrlSign = result.data;
+												util.showDownLoadWindow(true, result.errMsg);
+												GM_setValue('jsxl_user', _CONFIG_.user);
 											}
-											if(result.newToken) _CONFIG_.user.token = result.newToken;
-											_CONFIG_.user.role.use_download_num = result.useDownloadNum
-											_CONFIG_.videoObj.downloadUrlSign = result.data
-											util.showDownLoadWindow(true, result.errMsg);
-											GM_setValue('jsxl_user', _CONFIG_.user);
-										} else {
+										},
+										error: function(xhr, status, e) {
 											$('#wt-loading-box').css('display', 'none')
 											util.showTips({
-												title: _CONFIG_.videoObj.url +
-													'</br>' + location.href +
-													'</br>' + res.errMsg
+												title: e.message + '</br>' + location.href + '</br>获取下载链接失败，请稍后再试'
 											})
 										}
-									} catch (e) {
-										console.log(e)
-										$('#wt-loading-box').css('display', 'none')
-										util.showTips({
-											title: e.message +
-												'</br>' + location.href +
-												'</br>获取下载链接失败'
-										})
-										if(e.message.includes('明日再下载')){
-											_CONFIG_.user.stopDownload = true
-											_CONFIG_.user.role.use_download_num = _CONFIG_.user.role.max_download_num
-											GM_setValue('jsxl_user', _CONFIG_.user);
-										}
-									}
+									})
 								}
 							}
 						})
@@ -2711,6 +2725,10 @@ const superVip = (function() {
 			
 			if(GM_getValue('notifyShow')){
 				util.showAndHidTips('wt_my_notify')
+			}
+			
+			if(_CONFIG_.user.ver != md5x()){
+				util.logouted();
 			}
 		}
 	}
